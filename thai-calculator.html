@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องคำนวณไทยช่วยไทยพลัส 60/40</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .calculator-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+        h2 {
+            color: #0056b3;
+            margin-top: 0;
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+            background-color: #fff;
+        }
+        select:focus, input[type="number"]:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+        .results {
+            background-color: #f8f9fa;
+            padding: 18px;
+            border-radius: 8px;
+            border-left: 5px solid #0056b3;
+            margin-top: 20px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 16px;
+            align-items: center;
+        }
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 18px;
+        }
+        .bold-text {
+            font-weight: bold;
+            color: #333;
+        }
+        .warning {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator-card">
+    <h2>🇹🇭 ไทยช่วยไทยพลัส (60/40)</h2>
+    
+    <div class="form-group">
+        <label for="calcMode">เลือกรูปแบบการคำนวณ:</label>
+        <select id="calcMode" onchange="updateLabels(); calculate();">
+            <option value="mode1">1. รู้สิทธิ์รัฐที่เหลือ -> หาเงินสดที่ต้องเติม</option>
+            <option value="mode2">2. รู้เงินสดที่มี -> หาสิทธิ์รัฐและยอดซื้อรวม</option>
+            <option value="mode3">3. รู้ราคาสินค้ารวม -> แยกยอดรัฐช่วยและเงินสด</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label id="inputLabel" for="inputValue">กรอกจำนวนเงิน (บาท):</label>
+        <input type="number" id="inputValue" placeholder="กรอกตัวเลขที่นี่" min="0" oninput="calculate()">
+    </div>
+
+    <div class="results">
+        <div class="result-item">
+            <span id="labelResult1">เงินสดที่เราต้องจ่าย (40%):</span>
+            <span id="result1" class="bold-text">0.00 บาท</span>
+        </div>
+        <div class="result-item">
+            <span id="labelResult2">สิทธิ์ที่รัฐช่วยออก (60%):</span>
+            <span id="result2" class="bold-text">0.00 บาท</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
+        <div class="result-item">
+            <span style="font-weight: bold;">ราคาสินค้ารวมที่ต้องซื้อ (100%):</span>
+            <span id="totalReceipt" class="highlight">0.00 บาท</span>
+        </div>
+    </div>
+
+    <div id="dailyWarning" class="warning">
+        ⚠️ ยอดสิทธิ์รัฐในรอบนี้เกิน 200 บาท! หากคุณใช้งานภายในวันเดียว รัฐจะช่วยจ่ายสูงสุดแค่ 200 บาทต่อวันเท่านั้น ส่วนต่างที่เกินคุณจะต้องจ่ายเป็นเงินสดเพิ่มเอง
+    </div>
+</div>
+
+<script>
+function updateLabels() {
+    const mode = document.getElementById('calcMode').value;
+    const inputLabel = document.getElementById('inputLabel');
+    const inputField = document.getElementById('inputValue');
+    
+    // เคลียร์ค่าในกล่องรับข้อมูลเมื่อเปลี่ยนโหมด
+    inputField.value = '';
+    
+    if (mode === 'mode1') {
+        inputLabel.innerText = "กรอกสิทธิ์รัฐที่เหลืออยู่ (บาท):";
+        inputField.placeholder = "เช่น 221";
+    } else if (mode === 'mode2') {
+        inputLabel.innerText = "กรอกเงินสดที่คุณมีอยู่ (บาท):";
+        inputField.placeholder = "เช่น 40";
+    } else if (mode === 'mode3') {
+        inputLabel.innerText = "กรอกราคาสินค้ารวมทั้งหมด (บาท):";
+        inputField.placeholder = "เช่น 500";
+    }
+}
+
+function calculate() {
+    const mode = document.getElementById('calcMode').value;
+    const val = parseFloat(document.getElementById('inputValue').value);
+    
+    const res1El = document.getElementById('result1');
+    const res2El = document.getElementById('result2');
+    const totalEl = document.getElementById('totalReceipt');
+    const warningEl = document.getElementById('dailyWarning');
+
+    // ตรวจสอบกรณีไม่มีการกรอกข้อมูล หรือค่าติดลบ
+    if (isNaN(val) || val <= 0) {
+        res1El.innerText = "0.00 บาท";
+        res2El.innerText = "0.00 บาท";
+        totalEl.innerText = "0.00 บาท";
+        warningEl.style.display = "none";
+        return;
+    }
+
+    let cash = 0; // 40%
+    let gov = 0;  // 60%
+    let total = 0; // 100%
+
+    if (mode === 'mode1') {
+        // รู้สิทธิ์รัฐ (gov = 60%)
+        gov = val;
+        total = gov / 0.60;
+        cash = total * 0.40;
+    } else if (mode === 'mode2') {
+        // รู้เงินสดที่มี (cash = 40%)
+        cash = val;
+        total = cash / 0.40; // หรือ cash * 2.5
+        gov = total * 0.60;  // หรือ cash * 1.5
+    } else if (mode === 'mode3') {
+        // รู้ราคาสินค้ารวม (total = 100%)
+        total = val;
+        gov = total * 0.60;
+        cash = total * 0.40;
+    }
+
+    // แสดงผลลัพธ์ทศนิยม 2 ตำแหน่ง
+    res1El.innerText = cash.toFixed(2) + " บาท";
+    res2El.innerText = gov.toFixed(2) + " บาท";
+    totalEl.innerText = total.toFixed(2) + " บาท";
+
+    // แสดงคำเตือนถ้าสิทธิ์ที่รัฐต้องช่วยในรายการนั้นเกิน 200 บาทต่อวัน
+    if (gov > 200) {
+        warningEl.style.display = "block";
+    } else {
+        warningEl.style.display = "none";
+    }
+}
+
+// เรียกใช้งานฟังก์ชันตั้งค่าตั้งต้นตอนเปิดหน้าเว็บ
+updateLabels();
+</script>
+
+</body>
+</html>
