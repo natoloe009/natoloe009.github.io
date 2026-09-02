@@ -4,132 +4,370 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เครื่องคำนวณไทยช่วยไทยพลัส 60/40</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
             padding: 20px;
-            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
         }
-        .calculator-card {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
             width: 100%;
-            max-width: 450px;
+            max-width: 550px;
         }
-        h2 {
-            color: #0056b3;
-            margin-top: 0;
+
+        .calculator-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: slideUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculator-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+        }
+
+        .header {
             text-align: center;
-            font-size: 22px;
-            margin-bottom: 25px;
+            margin-bottom: 35px;
+            position: relative;
+            z-index: 1;
         }
+
+        .logo {
+            font-size: 3em;
+            margin-bottom: 10px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
         }
+
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
+            margin-bottom: 12px;
+            font-weight: 600;
             color: #333;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
         select, input[type="number"] {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
+            padding: 16px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             font-size: 16px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-            background-color: #fff;
+            background-color: #f8f9ff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            color: #333;
         }
+
+        select:hover, input[type="number"]:hover {
+            border-color: #667eea;
+            background-color: #f0f3ff;
+        }
+
         select:focus, input[type="number"]:focus {
-            border-color: #0056b3;
+            border-color: #667eea;
+            background-color: #fff;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
         }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+            cursor: pointer;
+            color: #667eea;
+        }
+
         .results {
-            background-color: #f8f9fa;
-            padding: 18px;
-            border-radius: 8px;
-            border-left: 5px solid #0056b3;
-            margin-top: 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+            padding: 30px;
+            border-radius: 16px;
+            border: 2px solid #e0e0e0;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
         }
+
         .result-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 16px;
             align-items: center;
+            margin-bottom: 18px;
+            font-size: 16px;
+            padding: 12px 0;
+            transition: all 0.3s ease;
         }
+
+        .result-item:hover {
+            transform: translateX(5px);
+        }
+
         .result-item:last-child {
             margin-bottom: 0;
         }
-        .highlight {
-            font-weight: bold;
-            color: #28a745;
+
+        .result-item span:first-child {
+            color: #555;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-item span:first-child i {
+            color: #667eea;
             font-size: 18px;
         }
+
         .bold-text {
-            font-weight: bold;
+            font-weight: 700;
             color: #333;
+            font-size: 17px;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+
+        .highlight {
+            font-weight: 800;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .divider {
+            border: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+            margin: 15px 0;
+        }
+
         .warning {
-            color: #dc3545;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 15px;
+            color: #d63031;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+            border: 2px solid #ffcccc;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 20px;
             font-size: 14px;
             display: none;
-            line-height: 1.4;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 5px 15px rgba(214, 48, 49, 0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .warning i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .calculator-card {
+                padding: 25px;
+                border-radius: 16px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .logo {
+                font-size: 2.5em;
+            }
+
+            .time-display {
+                font-size: 1.8em;
+            }
+
+            .results {
+                padding: 20px;
+            }
+
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .result-item span:last-child {
+                margin-left: 0;
+            }
+        }
+
+        /* Animation for input focus */
+        input[type="number"]:focus::placeholder {
+            color: transparent;
+        }
+
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
     </style>
 </head>
 <body>
 
-<div class="calculator-card">
-    <h2>🇹🇭 ไทยช่วยไทยพลัส (60/40)</h2>
-    
-    <div class="form-group">
-        <label for="calcMode">เลือกรูปแบบการคำนวณ:</label>
-        <select id="calcMode" onchange="updateLabels(); calculate();">
-            <option value="mode1">1. รู้สิทธิ์รัฐที่เหลือ -> หาเงินสดที่ต้องเติม</option>
-            <option value="mode2">2. รู้เงินสดที่มี -> หาสิทธิ์รัฐและยอดซื้อรวม</option>
-            <option value="mode3">3. รู้ราคาสินค้ารวม -> แยกยอดรัฐช่วยและเงินสด</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label id="inputLabel" for="inputValue">กรอกจำนวนเงิน (บาท):</label>
-        <input type="number" id="inputValue" placeholder="กรอกตัวเลขที่นี่" min="0" oninput="calculate()">
-    </div>
-
-    <div class="results">
-        <div class="result-item">
-            <span id="labelResult1">เงินสดที่เราต้องจ่าย (40%):</span>
-            <span id="result1" class="bold-text">0.00 บาท</span>
+<div class="container">
+    <div class="calculator-card">
+        <div class="header">
+            <div class="logo">🇹🇭</div>
+            <h2>ไทยช่วยไทยพลัส</h2>
+            <p class="subtitle">เครื่องคำนวณสิทธิ์ 60/40</p>
         </div>
-        <div class="result-item">
-            <span id="labelResult2">สิทธิ์ที่รัฐช่วยออก (60%):</span>
-            <span id="result2" class="bold-text">0.00 บาท</span>
+        
+        <div class="form-group">
+            <label for="calcMode"><i class="fas fa-calculator"></i> เลือกรูปแบบการคำนวณ:</label>
+            <select id="calcMode" onchange="updateLabels(); calculate();">
+                <option value="mode1">📊 รู้สิทธิ์รัฐที่เหลือ → หาเงินสดที่ต้องเติม</option>
+                <option value="mode2">💰 รู้เงินสดที่มี → หาสิทธิ์รัฐและยอดซื้อรวม</option>
+                <option value="mode3">🛍️ รู้ราคาสินค้ารวม → แยกยอดรัฐช่วยและเงินสด</option>
+            </select>
         </div>
-        <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
-        <div class="result-item">
-            <span style="font-weight: bold;">ราคาสินค้ารวมที่ต้องซื้อ (100%):</span>
-            <span id="totalReceipt" class="highlight">0.00 บาท</span>
-        </div>
-    </div>
 
-    <div id="dailyWarning" class="warning">
-        ⚠️ ยอดสิทธิ์รัฐในรอบนี้เกิน 200 บาท! หากคุณใช้งานภายในวันเดียว รัฐจะช่วยจ่ายสูงสุดแค่ 200 บาทต่อวันเท่านั้น ส่วนต่างที่เกินคุณจะต้องจ่ายเป็นเงินสดเพิ่มเอง
+        <div class="form-group">
+            <label id="inputLabel" for="inputValue"><i class="fas fa-money-bill-wave"></i> กรอกจำนวนเงิน (บาท):</label>
+            <input type="number" id="inputValue" placeholder="กรอกตัวเลขที่นี่" min="0" oninput="calculate()">
+        </div>
+
+        <div class="results">
+            <div class="result-item">
+                <span><i class="fas fa-wallet"></i>เงินสดที่เราต้องจ่าย (40%):</span>
+                <span id="result1" class="bold-text">0.00 ฿</span>
+            </div>
+            <div class="result-item">
+                <span><i class="fas fa-certificate"></i>สิทธิ์ที่รัฐช่วยออก (60%):</span>
+                <span id="result2" class="bold-text">0.00 ฿</span>
+            </div>
+            <hr class="divider">
+            <div class="result-item">
+                <span><i class="fas fa-shopping-cart"></i>ราคาสินค้ารวมทั้งหมด (100%):</span>
+                <span id="totalReceipt" class="highlight">0.00 ฿</span>
+            </div>
+        </div>
+
+        <div id="dailyWarning" class="warning">
+            <i class="fas fa-exclamation-circle"></i>
+            <strong>⚠️ เตือน!</strong> ยอดสิทธิ์รัฐในรอบนี้เกิน 200 บาท! หากคุณใช้งานภายในวันเดียว รัฐจะช่วยจ่ายสูงสุดแค่ 200 บาทต่อวันเท่านั้น ส่วนต่างที่เกินคุณจะต้องจ่ายเป็นเงินสดเพิ่มเอง
+        </div>
     </div>
 </div>
 
@@ -143,13 +381,13 @@ function updateLabels() {
     inputField.value = '';
     
     if (mode === 'mode1') {
-        inputLabel.innerText = "กรอกสิทธิ์รัฐที่เหลืออยู่ (บาท):";
+        inputLabel.innerHTML = "<i class='fas fa-certificate'></i> กรอกสิทธิ์รัฐที่เหลืออยู่ (บาท):";
         inputField.placeholder = "เช่น 221";
     } else if (mode === 'mode2') {
-        inputLabel.innerText = "กรอกเงินสดที่คุณมีอยู่ (บาท):";
+        inputLabel.innerHTML = "<i class='fas fa-money-bill-wave'></i> กรอกเงินสดที่คุณมีอยู่ (บาท):";
         inputField.placeholder = "เช่น 40";
     } else if (mode === 'mode3') {
-        inputLabel.innerText = "กรอกราคาสินค้ารวมทั้งหมด (บาท):";
+        inputLabel.innerHTML = "<i class='fas fa-shopping-cart'></i> กรอกราคาสินค้ารวมทั้งหมด (บาท):";
         inputField.placeholder = "เช่น 500";
     }
 }
@@ -165,9 +403,9 @@ function calculate() {
 
     // ตรวจสอบกรณีไม่มีการกรอกข้อมูล หรือค่าติดลบ
     if (isNaN(val) || val <= 0) {
-        res1El.innerText = "0.00 บาท";
-        res2El.innerText = "0.00 บาท";
-        totalEl.innerText = "0.00 บาท";
+        res1El.innerText = "0.00 ฿";
+        res2El.innerText = "0.00 ฿";
+        totalEl.innerText = "0.00 ฿";
         warningEl.style.display = "none";
         return;
     }
@@ -194,9 +432,9 @@ function calculate() {
     }
 
     // แสดงผลลัพธ์ทศนิยม 2 ตำแหน่ง
-    res1El.innerText = cash.toFixed(2) + " บาท";
-    res2El.innerText = gov.toFixed(2) + " บาท";
-    totalEl.innerText = total.toFixed(2) + " บาท";
+    res1El.innerText = cash.toFixed(2) + " ฿";
+    res2El.innerText = gov.toFixed(2) + " ฿";
+    totalEl.innerText = total.toFixed(2) + " ฿";
 
     // แสดงคำเตือนถ้าสิทธิ์ที่รัฐต้องช่วยในรายการนั้นเกิน 200 บาทต่อวัน
     if (gov > 200) {
